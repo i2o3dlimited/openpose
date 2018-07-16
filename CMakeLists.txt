@@ -518,28 +518,28 @@ if (WIN32)
     find_library(SPINNAKER_LIB spinnaker_v140 HINTS ${FIND_LIB_PREFIX}/spinnaker/lib)
   endif (WITH_FLIR_CAMERA)
   set(Caffe_LIBS ${Caffe_LIB};${Caffe_Proto_LIB})
-  set(OpenCV_INCLUDE_DIRS "3rdparty/windows/opencv/include")
+  set(OpenCV_INCLUDE_DIRS "${FIND_LIB_PREFIX}/opencv/include")
   # OpenCL
   if (${GPU_MODE} MATCHES "OPENCL")
     unset(Caffe_INCLUDE_DIRS CACHE)
-    set(Caffe_INCLUDE_DIRS "3rdparty/windows/caffe_opencl/include;3rdparty/windows/caffe_opencl/include2" CACHE FILEPATH "Caffe_INCLUDE_DIRS")
+    set(Caffe_INCLUDE_DIRS "${FIND_LIB_PREFIX}/caffe_opencl/include;${FIND_LIB_PREFIX}/caffe_opencl/include2" CACHE FILEPATH "Caffe_INCLUDE_DIRS")
   # CUDA and CPU
   else (${GPU_MODE} MATCHES "OPENCL")
     # CPU
     if (${GPU_MODE} MATCHES "CPU_ONLY")
-      set(Caffe_INCLUDE_DIRS "3rdparty/windows/caffe_cpu/include;3rdparty/windows/caffe_cpu/include2" CACHE FILEPATH "Caffe_INCLUDE_DIRS")
+      set(Caffe_INCLUDE_DIRS "${FIND_LIB_PREFIX}/caffe_cpu/include;${FIND_LIB_PREFIX}/caffe_cpu/include2" CACHE FILEPATH "Caffe_INCLUDE_DIRS")
     # CUDA
     else (${GPU_MODE} MATCHES "CPU_ONLY")
-      set(Caffe_INCLUDE_DIRS "3rdparty/windows/caffe/include;3rdparty/windows/caffe/include2" CACHE FILEPATH "Caffe_INCLUDE_DIRS")
+      set(Caffe_INCLUDE_DIRS "${FIND_LIB_PREFIX}/caffe/include;${FIND_LIB_PREFIX}/caffe/include2" CACHE FILEPATH "Caffe_INCLUDE_DIRS")
     endif (${GPU_MODE} MATCHES "CPU_ONLY")
   endif (${GPU_MODE} MATCHES "OPENCL")
-  set(Boost_INCLUDE_DIRS "3rdparty/windows/caffe3rdparty/include/boost-1_61")
-  set(WINDOWS_INCLUDE_DIRS "3rdparty/windows/caffe3rdparty/include")
+  set(Boost_INCLUDE_DIRS "${FIND_LIB_PREFIX}/caffe3rdparty/include/boost-1_61")
+  set(WINDOWS_INCLUDE_DIRS "${FIND_LIB_PREFIX}/caffe3rdparty/include")
   if (WITH_3D_RENDERER)
-    set(GLUT_INCLUDE_DIRS "3rdparty/windows/freeglut/include")
+    set(GLUT_INCLUDE_DIRS "${FIND_LIB_PREFIX}/freeglut/include")
   endif (WITH_3D_RENDERER)
   if (WITH_FLIR_CAMERA)
-    set(SPINNAKER_INCLUDE_DIRS "3rdparty/windows/spinnaker/include")
+    set(SPINNAKER_INCLUDE_DIRS "${FIND_LIB_PREFIX}/spinnaker/include")
   endif (WITH_FLIR_CAMERA)
   set(Caffe_FOUND 1)
 
@@ -555,20 +555,20 @@ if (WIN32)
     # Locate DLLs
     # Caffe DLLs
     if (${GPU_MODE} MATCHES "CUDA")
-      file(GLOB CAFFE_DLL "${CMAKE_SOURCE_DIR}/3rdparty/windows/caffe/bin/*.dll")
+      file(GLOB CAFFE_DLL "${FIND_LIB_PREFIX}/caffe/bin/*.dll")
     elseif (${GPU_MODE} MATCHES "OPENCL")
-      file(GLOB CAFFE_DLL "${CMAKE_SOURCE_DIR}/3rdparty/windows/caffe_opencl/bin/*.dll")
+      file(GLOB CAFFE_DLL "${FIND_LIB_PREFIX}/caffe_opencl/bin/*.dll")
     elseif (${GPU_MODE} MATCHES "CPU_ONLY")
-      file(GLOB CAFFE_DLL "${CMAKE_SOURCE_DIR}/3rdparty/windows/caffe_cpu/bin/*.dll")
+      file(GLOB CAFFE_DLL "${FIND_LIB_PREFIX}/caffe_cpu/bin/*.dll")
     endif ()
     # Caffe 3rd-party DLLs
-    file(GLOB CAFFE_3RD_PARTY_DLL "${CMAKE_SOURCE_DIR}/3rdparty/windows/caffe3rdparty/lib/*.dll")
+    file(GLOB CAFFE_3RD_PARTY_DLL "${FIND_LIB_PREFIX}/caffe3rdparty/lib/*.dll")
     # OpenCV DLLs
-    file(GLOB OPENCV_DLL "${CMAKE_SOURCE_DIR}/3rdparty/windows/opencv/x64/vc14/bin/*.dll")
+    file(GLOB OPENCV_DLL "${FIND_LIB_PREFIX}/opencv/x64/vc14/bin/*.dll")
     # GLUT DLLs
-    file(GLOB GLUT_DLL "${CMAKE_SOURCE_DIR}/3rdparty/windows/freeglut/bin/*.dll")
+    file(GLOB GLUT_DLL "${FIND_LIB_PREFIX}/freeglut/bin/*.dll")
     # Spinnaker DLLs and other files
-    file(GLOB SPINNAKER_DLL "${CMAKE_SOURCE_DIR}/3rdparty/windows/spinnaker/bin/*")
+    file(GLOB SPINNAKER_DLL "${FIND_LIB_PREFIX}/spinnaker/bin/*")
     # Copy DLLs into same folder
     set(BIN_FOLDER ${CMAKE_BINARY_DIR}/bin)
     file(MAKE_DIRECTORY ${BIN_FOLDER})
@@ -602,7 +602,7 @@ if (UNIX OR APPLE)
         on your internet connection.")
 
       # Check if pulled
-      file(GLOB CAFFE_DIR_VALID ${CMAKE_SOURCE_DIR}/3rdparty/caffe/*)
+      file(GLOB CAFFE_DIR_VALID ${FIND_LIB_PREFIX}/caffe/*)
       list(LENGTH CAFFE_DIR_VALID CAFFE_DIR_VALID_LENGTH)
       if (CAFFE_DIR_VALID_LENGTH EQUAL 0)
         execute_process(COMMAND git submodule update --init --recursive)
@@ -613,12 +613,12 @@ if (UNIX OR APPLE)
       # Build Process
       set(CAFFE_CPU_ONLY OFF)
       if (${GPU_MODE} MATCHES "CUDA")
-        execute_process(COMMAND git checkout master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/caffe)
+        execute_process(COMMAND git checkout master WORKING_DIRECTORY ${FIND_LIB_PREFIX}/caffe)
       elseif (${GPU_MODE} MATCHES "CPU_ONLY")
         if (USE_MKL)
           #execute_process(COMMAND git checkout intel WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/caffe)
-          execute_process(COMMAND git checkout b6712ce WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/caffe)
-          execute_process(COMMAND sh prepare_mkl.sh WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/caffe/external/mkl
+          execute_process(COMMAND git checkout b6712ce WORKING_DIRECTORY ${FIND_LIB_PREFIX}/caffe)
+          execute_process(COMMAND sh prepare_mkl.sh WORKING_DIRECTORY ${FIND_LIB_PREFIX}/caffe/external/mkl
               OUTPUT_VARIABLE rv)
           set( MLIST ${rv} )
           separate_arguments(MLIST)
@@ -648,12 +648,12 @@ if (UNIX OR APPLE)
             "${CMAKE_BINARY_DIR}/caffe/lib/libmkldnn.so"
             )
         else (USE_MKL)
-          execute_process(COMMAND git checkout master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/caffe)
+          execute_process(COMMAND git checkout master WORKING_DIRECTORY ${FIND_LIB_PREFIX}/caffe)
         endif (USE_MKL)
         set(CAFFE_CPU_ONLY ON)
         set(USE_CUDNN OFF)
       elseif (${GPU_MODE} MATCHES "OPENCL")
-        execute_process(COMMAND git checkout opencl WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/caffe)
+        execute_process(COMMAND git checkout opencl WORKING_DIRECTORY ${FIND_LIB_PREFIX}/caffe)
         set(USE_CUDNN OFF)
       endif (${GPU_MODE} MATCHES "CUDA")
 
@@ -662,7 +662,7 @@ if (UNIX OR APPLE)
       find_package(Caffe)
       include(ExternalProject)
       set(CAFFE_PREFIX caffe)
-      set(CAFFE_URL ${CMAKE_SOURCE_DIR}/3rdparty/caffe)
+      set(CAFFE_URL ${FIND_LIB_PREFIX}/caffe)
 
       # One for Intel Branch and one for Master
       if (USE_MKL)
@@ -731,7 +731,7 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS})
 
 if (USE_ASIO)
-  include_directories(${CMAKE_SOURCE_DIR}/3rdparty/asio/include/)
+  include_directories(${FIND_LIB_PREFIX}/asio/include/)
   # OpenPose flags
   add_definitions(-DUSE_ASIO)
   # Tell Asio it is not using Boost
