@@ -4,7 +4,7 @@ set(SOURCES_OP_3D
     jointAngleEstimation.cpp
     poseTriangulation.cpp)
 
-include(${CMAKE_SOURCE_DIR}/cmake/Utils.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/Utils.cmake)
 prepend(SOURCES_OP_3D_WITH_CP ${CMAKE_CURRENT_SOURCE_DIR} ${SOURCES_OP_3D})
 set(SOURCES_OP_3D_WITH_CP ${SOURCES_OP_3D_WITH_CP} PARENT_SCOPE)
 set(SOURCES_OPENPOSE ${SOURCES_OPENPOSE} ${SOURCES_OP_3D_WITH_CP} PARENT_SCOPE)
